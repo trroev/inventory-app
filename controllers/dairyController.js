@@ -1,7 +1,34 @@
 const Dairy = require("../models/dairy");
+const Meat = require("../models/meat");
+const Produce = require("../models/produce");
+const Seafood = require("../models/seafood");
+
+const async = require("async");
 
 exports.index = (req, res) => {
-  res.send("NOT IMPLEMENTED: Site Home Page");
+  async.parallel(
+    {
+      dairy_count(callback) {
+        Dairy.countDocuments({}, callback);
+      },
+      meat_count(callback) {
+        Meat.countDocuments({}, callback);
+      },
+      produce_count(callback) {
+        Produce.countDocuments({}, callback);
+      },
+      seafood_count(callback) {
+        Seafood.countDocuments({}, callback);
+      },
+    },
+    (err, results) => {
+      res.render("index", {
+        title: "Inventory",
+        error: err,
+        data: results,
+      });
+    }
+  );
 };
 
 exports.dairy_list = (req, res) => {

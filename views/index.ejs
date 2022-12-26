@@ -1,11 +1,36 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
+  <%- include("./partials/head.ejs") %>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-2">
+          <%- include("./partials/sidebar.ejs") %>
+        </div>
+        <div class="col-sm-10">
+          <h1><%= title %></h1>
+          <p>Welcome!</p>
+
+          <h1>Dynamic content</h1>
+
+          <% if (error) { %>
+          <p>Error getting dynamic content.</p>
+          <% } else { %>
+          <p>The library has the following record counts:</p>
+
+          <ul>
+            <li><strong>Dairy:</strong> <%= data.dairy_count %></li>
+            <li><strong>Meat:</strong> <%= data.meat_count %></li>
+            <li>
+              <strong>Produce:</strong> <%= data.produce_count %>
+            </li>
+            <li>
+              <strong>Seafood:</strong> <%= data.seafood_count %>
+            </li>
+          </ul>
+          <% } %>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
