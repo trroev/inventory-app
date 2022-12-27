@@ -20,7 +20,7 @@ exports.produce_detail = (req, res) => {
 };
 
 exports.produce_create_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Produce create GET");
+  res.render("produce_form", { title: "Create Produce Item" });
 };
 
 exports.produce_create_post = (req, res) => {

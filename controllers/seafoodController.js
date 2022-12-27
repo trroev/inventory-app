@@ -20,7 +20,7 @@ exports.seafood_detail = (req, res) => {
 };
 
 exports.seafood_create_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Seafood create GET");
+  res.render("seafood_form", { title: "Create Seafood Item" });
 };
 
 exports.seafood_create_post = (req, res) => {

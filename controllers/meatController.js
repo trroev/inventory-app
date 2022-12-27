@@ -20,7 +20,7 @@ exports.meat_detail = (req, res) => {
 };
 
 exports.meat_create_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Meat create GET");
+  res.render("meat_form", { title: "Create Meat Item" });
 };
 
 exports.meat_create_post = (req, res) => {
