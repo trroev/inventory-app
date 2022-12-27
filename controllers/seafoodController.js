@@ -1,7 +1,18 @@
 const Seafood = require("../models/seafood");
 
-exports.seafood_list = (req, res) => {
-  res.send("NOT IMPLEMENTED: Seafood list");
+exports.seafood_list = (req, res, next) => {
+  Seafood.find({}, "name price")
+    .sort({ name: 1 })
+    .populate("price")
+    .exec(function (err, list_seafood) {
+      if (err) {
+        return next(err);
+      }
+      res.render("seafood_list", {
+        title: "Seafood List",
+        seafood_list: list_seafood,
+      });
+    });
 };
 
 exports.seafood_detail = (req, res) => {

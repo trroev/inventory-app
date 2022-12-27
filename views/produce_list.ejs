@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <%- include("./partials/head") %>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-2">
+          <%- include("./partials/sidebar.ejs") %>
+        </div>
+        <div class="col-sm-10">
+          <h1><%= title %></h1>
+          <ul>
+            <% for (let i = 0; i < produce_list.length; i++) { %>
+            <li>
+              <a href="<%= produce_list[i].url %>"
+                ><%= produce_list[i].name %> (<%=
+                produce_list[i].price %>)</a
+              >
+            </li>
+            <% } %> <% if (produce_list.length === 0) { %>
+            <li>There is no produce.</li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

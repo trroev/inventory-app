@@ -1,7 +1,18 @@
 const Produce = require("../models/produce");
 
-exports.produce_list = (req, res) => {
-  res.send("NOT IMPLEMENTED: Produce list");
+exports.produce_list = (req, res, next) => {
+  Produce.find({}, "name price")
+    .sort({ name: 1 })
+    .populate("price")
+    .exec(function (err, list_produce) {
+      if (err) {
+        return next(err);
+      }
+      res.render("produce_list", {
+        title: "Produce List",
+        produce_list: list_produce,
+      });
+    });
 };
 
 exports.produce_detail = (req, res) => {
