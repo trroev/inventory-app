@@ -148,6 +148,50 @@ exports.produce_update_get = (req, res, next) => {
   });
 };
 
-exports.produce_update_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Produce update POST");
-};
+exports.produce_update_post = [
+  body("name", "Produce item name required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("description", "a short description is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "Price is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("quantity", "Quantity is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    const produce = new Produce({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      quantity: req.body.quantity,
+      _id: req.params.id,
+    });
+    if (!errors.isEmpty()) {
+      res.render("produce_form", {
+        title: `Update ${produce.name}`,
+        produce: produce,
+        errors: errors.array(),
+      });
+      return;
+    }
+    Produce.findByIdAndUpdate(
+      req.params.id,
+      produce,
+      {},
+      (err, theproduce) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect(theproduce.url);
+      }
+    );
+  },
+];

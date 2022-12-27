@@ -177,6 +177,50 @@ exports.dairy_update_get = (req, res, next) => {
   });
 };
 
-exports.dairy_update_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Dairy update POST");
-};
+exports.dairy_update_post = [
+  body("name", "Dairy item name required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("description", "a short description is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "Price is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("quantity", "Quantity is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    const dairy = new Dairy({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      quantity: req.body.quantity,
+      _id: req.params.id,
+    });
+    if (!errors.isEmpty()) {
+      res.render("dairy_form", {
+        title: `Update ${dairy.name}`,
+        dairy: dairy,
+        errors: errors.array(),
+      });
+      return;
+    }
+    Dairy.findByIdAndUpdate(
+      req.params.id,
+      dairy,
+      {},
+      (err, thedairy) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect(thedairy.url);
+      }
+    );
+  },
+];

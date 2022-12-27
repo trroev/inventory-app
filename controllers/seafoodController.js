@@ -148,6 +148,50 @@ exports.seafood_update_get = (req, res, next) => {
   });
 };
 
-exports.seafood_update_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Seafood update POST");
-};
+exports.seafood_update_post = [
+  body("name", "Seafood item name required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("description", "a short description is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "Price is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("quantity", "Quantity is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    const seafood = new Seafood({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      quantity: req.body.quantity,
+      _id: req.params.id,
+    });
+    if (!errors.isEmpty()) {
+      res.render("seafood_form", {
+        title: `Update ${seafood.name}`,
+        seafood: seafood,
+        errors: errors.array(),
+      });
+      return;
+    }
+    Seafood.findByIdAndUpdate(
+      req.params.id,
+      seafood,
+      {},
+      (err, theseafood) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect(theseafood.url);
+      }
+    );
+  },
+];

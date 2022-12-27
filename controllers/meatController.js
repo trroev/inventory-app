@@ -148,6 +148,50 @@ exports.meat_update_get = (req, res, next) => {
   });
 };
 
-exports.meat_update_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Meat update POST");
-};
+exports.meat_update_post = [
+  body("name", "Meat item name required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("description", "a short description is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "Price is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("quantity", "Quantity is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    const meat = new Meat({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      quantity: req.body.quantity,
+      _id: req.params.id,
+    });
+    if (!errors.isEmpty()) {
+      res.render("meat_form", {
+        title: `Update ${meat.name}`,
+        meat: meat,
+        errors: errors.array(),
+      });
+      return;
+    }
+    Meat.findByIdAndUpdate(
+      req.params.id,
+      meat,
+      {},
+      (err, themeat) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect(themeat.url);
+      }
+    );
+  },
+];
