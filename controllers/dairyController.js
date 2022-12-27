@@ -4,6 +4,7 @@ const Produce = require("../models/produce");
 const Seafood = require("../models/seafood");
 
 const async = require("async");
+const { body, validationResult } = require("express-validator");
 
 exports.index = (req, res) => {
   async.parallel(
@@ -32,9 +33,9 @@ exports.index = (req, res) => {
 };
 
 exports.dairy_list = (req, res, next) => {
-  Dairy.find({}, "name price")
+  Dairy.find({}, "name price quantity")
     .sort({ name: 1 })
-    .populate("price")
+    .populate("price", "quantity")
     .exec(function (err, list_dairy) {
       if (err) {
         return next(err);
@@ -74,9 +75,59 @@ exports.dairy_create_get = (req, res) => {
   res.render("dairy_form", { title: "Create Dairy Item" });
 };
 
-exports.dairy_create_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Dairy create POST");
-};
+exports.dairy_create_post = [
+  body("name", "Dairy item name required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("description", "Description must be provided")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "Price is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("quantity", "Quantity is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    const dairy = new Dairy({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      quantity: req.body.quantity,
+    });
+    if (!errors.isEmpty()) {
+      res.render("dairy_form", {
+        title: "Create Dairy Item",
+        dairy,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      Dairy.findOne({ name: req.body.name }).exec(
+        (err, found_dairy) => {
+          if (err) {
+            return next(err);
+          }
+          if (found_dairy) {
+            res.redirect(found_dairy.url);
+          } else {
+            dairy.save((err) => {
+              if (err) {
+                return next(err);
+              }
+              res.redirect(dairy.url);
+            });
+          }
+        }
+      );
+    }
+  },
+];
 
 exports.dairy_delete_get = (req, res) => {
   res.send("NOT IMPLEMENTED: Dairy delete GET");
