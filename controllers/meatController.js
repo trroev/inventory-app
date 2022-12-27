@@ -122,8 +122,13 @@ exports.meat_delete_get = (req, res, next) => {
   );
 };
 
-exports.meat_delete_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Meat delete POST");
+exports.meat_delete_post = (req, res, next) => {
+  Meat.findByIdAndRemove(req.body.id, (err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/inventory/meat");
+  });
 };
 
 exports.meat_update_get = (req, res) => {

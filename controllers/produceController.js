@@ -122,8 +122,13 @@ exports.produce_delete_get = (req, res, next) => {
   );
 };
 
-exports.produce_delete_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Produce delete POST");
+exports.produce_delete_post = (req, res, next) => {
+  Produce.findByIdAndRemove(req.body.id, (err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/inventory/produce");
+  });
 };
 
 exports.produce_update_get = (req, res) => {

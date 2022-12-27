@@ -122,8 +122,13 @@ exports.seafood_delete_get = (req, res, next) => {
   );
 };
 
-exports.seafood_delete_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Seafood delete POST");
+exports.seafood_delete_post = (req, res, next) => {
+  Seafood.findByIdAndRemove(req.body.id, (err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/inventory/seafood");
+  });
 };
 
 exports.seafood_update_get = (req, res) => {

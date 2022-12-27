@@ -151,8 +151,13 @@ exports.dairy_delete_get = (req, res, next) => {
   );
 };
 
-exports.dairy_delete_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Dairy delete POST");
+exports.dairy_delete_post = (req, res, next) => {
+  Dairy.findByIdAndRemove(req.body.id, (err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/inventory/dairy");
+  });
 };
 
 exports.dairy_update_get = (req, res) => {
