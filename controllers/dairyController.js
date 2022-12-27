@@ -80,7 +80,7 @@ exports.dairy_create_post = [
     .trim()
     .isLength({ min: 1 })
     .escape(),
-  body("description", "Description must be provided")
+  body("description", "a short description is required")
     .trim()
     .isLength({ min: 1 })
     .escape(),

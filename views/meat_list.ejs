@@ -13,8 +13,8 @@
             <% for (let i = 0; i < meat_list.length; i++) { %>
             <li>
               <a href="<%= meat_list[i].url %>"
-                ><%= meat_list[i].name %> (<%= meat_list[i].price
-                %>)</a
+                ><%= meat_list[i].name %> ($<%= meat_list[i].price %>,
+                <%= meat_list[i].quantity %>/ea)</a
               >
             </li>
             <% } %> <% if (meat_list.length === 0) { %>

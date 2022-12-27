@@ -1,11 +1,12 @@
 const Meat = require("../models/meat");
 
 const async = require("async");
+const { body, validationResult } = require("express-validator");
 
 exports.meat_list = (req, res, next) => {
-  Meat.find({}, "name price")
+  Meat.find({}, "name price quantity")
     .sort({ name: 1 })
-    .populate("price")
+    .populate("price", "quantity")
     .exec(function (err, list_meat) {
       if (err) {
         return next(err);
@@ -45,9 +46,59 @@ exports.meat_create_get = (req, res) => {
   res.render("meat_form", { title: "Create Meat Item" });
 };
 
-exports.meat_create_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Meat create POST");
-};
+exports.meat_create_post = [
+  body("name", "Meat item name required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("description", "a short description in required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "price is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("quantity", "quantity is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    const meat = new Meat({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      quantity: req.body.quantity,
+    });
+    if (!errors.isEmpty()) {
+      res.render("meat_form", {
+        title: "Create Meat Item",
+        meat,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      Meat.findOne({ name: req.body.name }).exec(
+        (err, found_meat) => {
+          if (err) {
+            return next(err);
+          }
+          if (found_meat) {
+            res.redirect(found_meat.url);
+          } else {
+            meat.save((err) => {
+              if (err) {
+                return next(err);
+              }
+              res.redirect(meat.url);
+            });
+          }
+        }
+      );
+    }
+  },
+];
 
 exports.meat_delete_get = (req, res) => {
   res.send("NOT IMPLEMENTED: Meat delete GET");
