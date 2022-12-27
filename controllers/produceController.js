@@ -1,11 +1,12 @@
 const Produce = require("../models/produce");
 
 const async = require("async");
+const { body, validationResult } = require("express-validator");
 
 exports.produce_list = (req, res, next) => {
-  Produce.find({}, "name price")
+  Produce.find({}, "name price quantity")
     .sort({ name: 1 })
-    .populate("price")
+    .populate("price", "quantity")
     .exec(function (err, list_produce) {
       if (err) {
         return next(err);
@@ -45,9 +46,59 @@ exports.produce_create_get = (req, res) => {
   res.render("produce_form", { title: "Create Produce Item" });
 };
 
-exports.produce_create_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Produce create POST");
-};
+exports.produce_create_post = [
+  body("name", "Produce item name required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("description", "a short description in required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "price is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("quantity", "quantity is required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    const produce = new Produce({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      quantity: req.body.quantity,
+    });
+    if (!errors.isEmpty()) {
+      res.render("produce_form", {
+        title: "Create Produce Item",
+        produce,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      Produce.findOne({ name: req.body.name }).exec(
+        (err, found_produce) => {
+          if (err) {
+            return next(err);
+          }
+          if (found_produce) {
+            res.redirect(found_produce.url);
+          } else {
+            produce.save((err) => {
+              if (err) {
+                return next(err);
+              }
+              res.redirect(produce.url);
+            });
+          }
+        }
+      );
+    }
+  },
+];
 
 exports.produce_delete_get = (req, res) => {
   res.send("NOT IMPLEMENTED: Produce delete GET");

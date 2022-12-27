@@ -13,8 +13,9 @@
             <% for (let i = 0; i < produce_list.length; i++) { %>
             <li>
               <a href="<%= produce_list[i].url %>"
-                ><%= produce_list[i].name %> (<%=
-                produce_list[i].price %>)</a
+                ><%= produce_list[i].name %> ($<%=
+                produce_list[i].price %>, <%= produce_list[i].quantity
+                %>/ea)</a
               >
             </li>
             <% } %> <% if (produce_list.length === 0) { %>
