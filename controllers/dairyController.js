@@ -31,8 +31,19 @@ exports.index = (req, res) => {
   );
 };
 
-exports.dairy_list = (req, res) => {
-  res.send("NOT IMPLEMENTED: Dairy list");
+exports.dairy_list = (req, res, next) => {
+  Dairy.find({}, "name price")
+    .sort({ name: 1 })
+    .populate("price")
+    .exec(function (err, list_dairy) {
+      if (err) {
+        return next(err);
+      }
+      res.render("dairy_list", {
+        title: "Dairy List",
+        dairy_list: list_dairy,
+      });
+    });
 };
 
 exports.dairy_detail = (req, res) => {
