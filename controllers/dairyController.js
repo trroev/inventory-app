@@ -51,7 +51,7 @@ exports.dairy_detail = (req, res) => {
 };
 
 exports.dairy_create_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Dairy create GET");
+  res.render("dairy_form", { title: "Create Dairy Item" });
 };
 
 exports.dairy_create_post = (req, res) => {
