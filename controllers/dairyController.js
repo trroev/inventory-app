@@ -46,8 +46,28 @@ exports.dairy_list = (req, res, next) => {
     });
 };
 
-exports.dairy_detail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Dairy detail: ${req.params.id}`);
+exports.dairy_detail = (req, res, next) => {
+  async.parallel(
+    {
+      dairy(callback) {
+        Dairy.findById(req.params.id).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      if (results.dairy == null) {
+        const err = new Error("Dairy item not found");
+        err.status = 404;
+        return next(err);
+      }
+      res.render("dairy_detail", {
+        title: "Dairy Item Detail",
+        dairy: results.dairy,
+      });
+    }
+  );
 };
 
 exports.dairy_create_get = (req, res) => {

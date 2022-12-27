@@ -1,5 +1,7 @@
 const Produce = require("../models/produce");
 
+const async = require("async");
+
 exports.produce_list = (req, res, next) => {
   Produce.find({}, "name price")
     .sort({ name: 1 })
@@ -15,8 +17,28 @@ exports.produce_list = (req, res, next) => {
     });
 };
 
-exports.produce_detail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Produce detail: ${req.params.id}`);
+exports.produce_detail = (req, res, next) => {
+  async.parallel(
+    {
+      produce(callback) {
+        Produce.findById(req.params.id).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      if (results.produce == null) {
+        const err = new Error("Produce item not found");
+        err.status = 404;
+        return next(err);
+      }
+      res.render("produce_detail", {
+        title: "Produce Item Detail",
+        produce: results.produce,
+      });
+    }
+  );
 };
 
 exports.produce_create_get = (req, res) => {

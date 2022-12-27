@@ -1,5 +1,7 @@
 const Meat = require("../models/meat");
 
+const async = require("async");
+
 exports.meat_list = (req, res, next) => {
   Meat.find({}, "name price")
     .sort({ name: 1 })
@@ -15,8 +17,28 @@ exports.meat_list = (req, res, next) => {
     });
 };
 
-exports.meat_detail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Meat detail: ${req.params.id}`);
+exports.meat_detail = (req, res, next) => {
+  async.parallel(
+    {
+      meat(callback) {
+        Meat.findById(req.params.id).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      if (results.meat == null) {
+        const err = new Error("Meat item not found");
+        err.status = 404;
+        return next(err);
+      }
+      res.render("meat_detail", {
+        title: "Meat Item Detail",
+        meat: results.meat,
+      });
+    }
+  );
 };
 
 exports.meat_create_get = (req, res) => {

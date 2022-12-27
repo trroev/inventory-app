@@ -1,5 +1,7 @@
 const Seafood = require("../models/seafood");
 
+const async = require("async");
+
 exports.seafood_list = (req, res, next) => {
   Seafood.find({}, "name price")
     .sort({ name: 1 })
@@ -15,8 +17,28 @@ exports.seafood_list = (req, res, next) => {
     });
 };
 
-exports.seafood_detail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Seafood detail: ${req.params.id}`);
+exports.seafood_detail = (req, res, next) => {
+  async.parallel(
+    {
+      seafood(callback) {
+        Seafood.findById(req.params.id).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      if (results.seafood == null) {
+        const err = new Error("Seafood item not found");
+        err.status = 404;
+        return next(err);
+      }
+      res.render("seafood_detail", {
+        title: "Seafood Item Detail",
+        seafood: results.seafood,
+      });
+    }
+  );
 };
 
 exports.seafood_create_get = (req, res) => {
