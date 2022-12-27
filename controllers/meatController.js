@@ -100,8 +100,26 @@ exports.meat_create_post = [
   },
 ];
 
-exports.meat_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Meat delete GET");
+exports.meat_delete_get = (req, res, next) => {
+  async.parallel(
+    {
+      meat(callback) {
+        Meat.findById(req.params.id).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      if (results.meat == null) {
+        res.redirect("/inventory/meat");
+      }
+      res.render("meat_delete", {
+        title: "Delete Meat Item",
+        meat: results.meat,
+      });
+    }
+  );
 };
 
 exports.meat_delete_post = (req, res) => {

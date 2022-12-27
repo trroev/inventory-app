@@ -100,8 +100,26 @@ exports.produce_create_post = [
   },
 ];
 
-exports.produce_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Produce delete GET");
+exports.produce_delete_get = (req, res, next) => {
+  async.parallel(
+    {
+      produce(callback) {
+        Produce.findById(req.params.id).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      if (results.produce == null) {
+        res.redirect("/inventory/produce");
+      }
+      res.render("produce_delete", {
+        title: "Delete Produce Item",
+        produce: results.produce,
+      });
+    }
+  );
 };
 
 exports.produce_delete_post = (req, res) => {

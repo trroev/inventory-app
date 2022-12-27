@@ -100,8 +100,26 @@ exports.seafood_create_post = [
   },
 ];
 
-exports.seafood_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Seafood delete GET");
+exports.seafood_delete_get = (req, res, next) => {
+  async.parallel(
+    {
+      seafood(callback) {
+        Seafood.findById(req.params.id).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      if (results.seafood == null) {
+        res.redirect("/inventory/seafood");
+      }
+      res.render("seafood_delete", {
+        title: "Delete Seafood Item",
+        seafood: results.seafood,
+      });
+    }
+  );
 };
 
 exports.seafood_delete_post = (req, res) => {
