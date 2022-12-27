@@ -13,8 +13,9 @@
             <% for (let i = 0; i < seafood_list.length; i++) { %>
             <li>
               <a href="<%= seafood_list[i].url %>"
-                ><%= seafood_list[i].name %> (<%=
-                seafood_list[i].price %>)</a
+                ><%= seafood_list[i].name %> ($<%=
+                seafood_list[i].price %>, <%= seafood_list[i].quantity
+                %>/ea)</a
               >
             </li>
             <% } %> <% if (seafood_list.length === 0) { %>
