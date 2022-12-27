@@ -129,8 +129,26 @@ exports.dairy_create_post = [
   },
 ];
 
-exports.dairy_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Dairy delete GET");
+exports.dairy_delete_get = (req, res, next) => {
+  async.parallel(
+    {
+      dairy(callback) {
+        Dairy.findById(req.params.id).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      if (results.dairy == null) {
+        res.redirect("/inventory/dairy");
+      }
+      res.render("dairy_delete", {
+        title: "Delete Dairy Item",
+        dairy: results.dairy,
+      });
+    }
+  );
 };
 
 exports.dairy_delete_post = (req, res) => {
