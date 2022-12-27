@@ -160,8 +160,21 @@ exports.dairy_delete_post = (req, res, next) => {
   });
 };
 
-exports.dairy_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Dairy update GET");
+exports.dairy_update_get = (req, res, next) => {
+  Dairy.findById(req.params.id, (err, dairy) => {
+    if (err) {
+      return next(err);
+    }
+    if (dairy == null) {
+      const err = new Error("Dairy item not found");
+      err.status = 404;
+      return next(err);
+    }
+    res.render("dairy_form", {
+      title: `Update ${dairy.name}`,
+      dairy: dairy,
+    });
+  });
 };
 
 exports.dairy_update_post = (req, res) => {

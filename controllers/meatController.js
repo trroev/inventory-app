@@ -131,8 +131,21 @@ exports.meat_delete_post = (req, res, next) => {
   });
 };
 
-exports.meat_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Meat update GET");
+exports.meat_update_get = (req, res, next) => {
+  Meat.findById(req.params.id, (err, meat) => {
+    if (err) {
+      return next(err);
+    }
+    if (meat == null) {
+      const err = new Error("Meat item not found");
+      err.status = 404;
+      return next(err);
+    }
+    res.render("meat_form", {
+      title: `Update ${meat.name}`,
+      meat: meat,
+    });
+  });
 };
 
 exports.meat_update_post = (req, res) => {

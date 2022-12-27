@@ -131,8 +131,21 @@ exports.produce_delete_post = (req, res, next) => {
   });
 };
 
-exports.produce_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Produce update GET");
+exports.produce_update_get = (req, res, next) => {
+  Produce.findById(req.params.id, (err, produce) => {
+    if (err) {
+      return next(err);
+    }
+    if (produce == null) {
+      const err = new Error("Produce item not found");
+      err.status = 404;
+      return next(err);
+    }
+    res.render("produce_form", {
+      title: `Update ${produce.name}`,
+      produce: produce,
+    });
+  });
 };
 
 exports.produce_update_post = (req, res) => {

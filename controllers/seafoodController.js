@@ -131,8 +131,21 @@ exports.seafood_delete_post = (req, res, next) => {
   });
 };
 
-exports.seafood_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Seafood update GET");
+exports.seafood_update_get = (req, res, next) => {
+  Seafood.findById(req.params.id, (err, seafood) => {
+    if (err) {
+      return next(err);
+    }
+    if (seafood == null) {
+      const err = new Error("Seafood item not found");
+      err.status = 404;
+      return next(err);
+    }
+    res.render("seafood_form", {
+      title: `Update ${seafood.name}`,
+      seafood: seafood,
+    });
+  });
 };
 
 exports.seafood_update_post = (req, res) => {
